@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Bluetooth, BluetoothOff, Play } from 'lucide-react-native'
+import { Bluetooth, BluetoothOff, Navigation, Play } from 'lucide-react-native'
 import Tester from '../components/modal/tester'
 
 import useBluetooth from '../utils/hook/bluetooth'
@@ -9,7 +9,7 @@ const cmdTestador = ['54', '46', '53', '73', '01', '01', '9E']
 const cmdSimulador = ['54', '46', '53', '54', '01', '01', 'BD']
 const cmdStartTest = ['54', '46', '53', '53', '01', '01', 'BE']
 
-const Testador = () => {
+const Testador = ({ navigation }) => {
 
   const { startScan, sendDataToDevice, isScanning, receivedData, devices, connectToDevice, disconnectFromDevice, connectedDevice } = useBluetooth()
 
@@ -53,11 +53,13 @@ const Testador = () => {
     setTPS(false);
     setTemperatura(false);
     setPeriferico(false);
-
   }
 
   return (
     <View>
+
+      <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', textAlign: 'center' }}> Jiga de Teste <>SpeedBike</></Text>
+
 
       <View style={styles.containnerButton}>
         <View style={[{ backgroundColor: (isScanning || connectedDevice) ? 'gray' : 'blue' }, styles.buttonLayout]}>
@@ -147,12 +149,10 @@ const Testador = () => {
       </Text>
 
       <Button
-        onPress={() => console.log('Clicou QR Code')}
-        title="Leitura QR Code"
-        color='#2196F3'
-        disabled={false}
-        accessibilityLabel="Learn more about this purple button"
-      />
+        title="Qr Code" onPress={() => navigation.navigate('Qrcode')} />
+
+
+
 
     </View>
   )
@@ -182,7 +182,8 @@ const styles = StyleSheet.create({
   {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    marginVertical: 10
   },
   buttonLayout: {
     flexDirection: 'row',
