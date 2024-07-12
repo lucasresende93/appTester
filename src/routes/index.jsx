@@ -5,14 +5,6 @@ import Qrcode from "../screens/Qrcode";
 
 const Stack = createStackNavigator();
 
-function Stacks(){
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Qrcode" component={Qrcode} />
-        </Stack.Navigator>
-    )
-}
-
 export default function Routes() {
     return (
         <NavigationContainer>
