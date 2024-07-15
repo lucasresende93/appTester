@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Bluetooth, BluetoothOff, Navigation, Play } from 'lucide-react-native'
 import Tester from '../components/modal/tester'
 
-import useBluetooth from '../utils/hook/bluetooth'
+import { useBluetoothContext } from '../utils/hook/bluetooth'
 
 const cmdTestador = ['54', '46', '53', '73', '01', '01', '9E']
 const cmdSimulador = ['54', '46', '53', '54', '01', '01', 'BD']
@@ -11,7 +11,7 @@ const cmdStartTest = ['54', '46', '53', '53', '01', '01', 'BE']
 
 const Testador = ({ navigation }) => {
 
-  const { startScan, sendDataToDevice, isScanning, receivedData, devices, connectToDevice, disconnectFromDevice, connectedDevice } = useBluetooth()
+  const {  startScan, sendDataToDevice, isScanning, receivedData, devices, connectToDevice, disconnectFromDevice, connectedDevice } = useBluetoothContext()
 
   const [injecao, setInjecao] = useState(false)
   const [ignicao, setIgnicao] = useState(false)
@@ -54,6 +54,8 @@ const Testador = ({ navigation }) => {
     setTemperatura(false);
     setPeriferico(false);
   }
+
+
 
   return (
     <View>
@@ -128,7 +130,7 @@ const Testador = ({ navigation }) => {
           justifyContent: 'center',
           padding: 10
         }}
-        onPress={() => sendDataToDevice(cmdSimulador)}>
+        onPress={handleRequestMTU}>
         <Play width={24} height={24} color="black" />
         <Text style={{ color: 'black' }}>Inicia Simulador </Text>
       </TouchableOpacity>
@@ -147,7 +149,11 @@ const Testador = ({ navigation }) => {
       <Text style={{ color: 'black', alignItems: 'center', justifyContent: 'center', padding: 10, textAlign: 'center' }}>
         {receivedData}
       </Text>
-
+      {connectedDevice &&
+        <Text style={{ color: 'black', alignItems: 'center', justifyContent: 'center', padding: 10, textAlign: 'center' }}>
+          Conectado em {connectedDevice.name}
+        </Text>
+      }
       <Button
         title="Qr Code" onPress={() => navigation.navigate('Qrcode')} />
 

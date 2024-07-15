@@ -4,7 +4,7 @@ import { NativeEventEmitter, NativeModules, Platform, PermissionsAndroid, Alert 
 
 
 import { Buffer } from 'buffer';
-import { receiveMessageOnPort } from 'worker_threads';
+
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
@@ -12,7 +12,7 @@ const SERVICE_UUID = '0000fff0-0000-1000-8000-00805f9b34fb';
 const CHARACTERISTIC_WRITE_UUID = '0000fff2-0000-1000-8000-00805f9b34fb';
 const CHARACTERISTIC_READ_UUID = '0000fff1-0000-1000-8000-00805f9b34fb';
 
-const specificNames = ['SpeedBike', 'EBYTEBLE', 'testador', 'EMODULE'];
+const specificNames = ['SpeedBike', 'EBYTEBLE', 'testador', 'EMODULE', 'ENGENHARIA'];
 
 let dispositivosBLE = 0;
 
@@ -31,8 +31,8 @@ const useBluetooth = () => {
 
 
         const handleDiscoverPeripheral = (peripheral) => {
-            
-            if (peripheral.name) {
+
+            if (peripheral.name === 'ENGENHARIA2') {
                 setDevices((prevDevices) => {
                     if (!prevDevices.some((device) => device.id === peripheral.id)) {
                         // console.log('Discovered peripheral:', peripheral);
@@ -48,23 +48,26 @@ const useBluetooth = () => {
 
         const handleUpdateValueForCharacteristic = (data) => {
             const { value } = data;
-            
-          
-             hexString = value.map(b => 
+
+
+            hexString = value.map(b =>
                 b.toString(16).padStart(2, '0')).join(', ');
-                setReceivedData(value);
+            setReceivedData(value);
 
 
-            console.log('Received data:', data, " hex:",hexString);
+            console.log('Received data:', data, " hex:", hexString);
 
         };
 
-        bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
-        bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
+
+        let teste1 = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
+        let teste2 = bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
 
         return () => {
-            bleManagerEmitter.removeListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
-            bleManagerEmitter.removeListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
+            teste1.remove();
+            teste2.remove();
+            // bleManagerEmitter.removeListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
+            // bleManagerEmitter.removeListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
         };
     }, []);
 
@@ -90,7 +93,7 @@ const useBluetooth = () => {
     const startScan = () => {
         if (!isScanning) {
             dispositivosBLE = 0;
-           
+
             setDevices([]);
             BleManager.scan([], 3, true).then(() => {
                 console.log('Scanning...');
@@ -119,7 +122,7 @@ const useBluetooth = () => {
     const connectToDevice = (device) => {
         BleManager.connect(device.id)
             .then(() => {
-                
+
                 console.log('Connected to', device.name);
                 setConnectedDevice(device);
 
@@ -168,17 +171,21 @@ const useBluetooth = () => {
     const sendDataToDevice = (hexArrayTemp) => {
         if (connectedDevice) {
             // Converter o array hexadecimal em bytes
-            hexArray = hexArrayTemp;
-            const byteArray = hexArray.map(hex => parseInt(hex, 16));
+            const byteArray = hexArrayTemp.map(hex => parseInt(hex, 16));
 
             // Converter os bytes em um buffer
             const buffer = Buffer.from(byteArray);
             const data = buffer.toJSON().data;
 
-            // console.log(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_WRITE_UUID, data);
+
 
             // Enviar os dados para o dispositivo
-            BleManager.write(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_WRITE_UUID, data)
+            BleManager.write(
+                connectedDevice.id,
+                SERVICE_UUID,
+                CHARACTERISTIC_WRITE_UUID,
+                data,
+                250)
                 .then(() => {
                     let hexString = '';
 
@@ -186,7 +193,7 @@ const useBluetooth = () => {
                         let element = data[index].toString(16);
                         hexString += element.padStart(2, '0') + ' ';
                     }
-                    console.log('Data sent successfully', hexString);
+                    // console.log('Data sent successfully', hexString);
                 })
                 .catch((error) => {
                     console.log('Write error', error);
@@ -195,6 +202,8 @@ const useBluetooth = () => {
         else
             console.log('No device connected.')
     };
+
+ 
 
     return {
         disconnectFromDevice,
