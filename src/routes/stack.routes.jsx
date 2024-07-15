@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import Qrcode from '../screens/Qrcode';
 import Testador from '../screens/Testador';
+import Bootloader from '../screens/Bootloader';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,8 @@ export default function StackRoutes() {
             />
             <Stack.Screen name="Qrcode" 
             component={Qrcode} />
+            <Stack.Screen name="Bootloader" 
+            component={Bootloader} />
         </Stack.Navigator>
     )
 }

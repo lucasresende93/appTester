@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import QRCodeScanner from 'react-native-qrcode-scanner'
 import { RNCamera } from 'react-native-camera'
@@ -14,7 +14,7 @@ const sync = ['54', '46', '53', '49']
 
 
 
-const Qrcode = () => {
+const Qrcode = ({ navigation }) => {
 
   const [data, setData] = useState('');
 
@@ -25,7 +25,7 @@ const Qrcode = () => {
     alert(data);
     // console.log(data);
   };
- 
+
 
   useEffect(() => {
 
@@ -42,13 +42,13 @@ const Qrcode = () => {
       index: lines[3].substring(10).padStart(4, '0').split(''),
     };
 
-   
+
     deviceInfo.senhaBTE =
       deviceInfo.serialNumber[4] +
       deviceInfo.serialNumber[5] +
-      deviceInfo.index[0]+
-      deviceInfo.index[1]+
-      deviceInfo.index[2]+
+      deviceInfo.index[0] +
+      deviceInfo.index[1] +
+      deviceInfo.index[2] +
       deviceInfo.index[3]
 
 
@@ -57,7 +57,7 @@ const Qrcode = () => {
       return charArray.map(char => char.charCodeAt(0).toString(16));
     };
 
-    
+
     const hexDeviceInfo = {
       modelNumber: convertToHexArray(deviceInfo.modelNumber),
       hardware: convertToHexArray(deviceInfo.hardware),
@@ -90,7 +90,7 @@ const Qrcode = () => {
 
     arrayToSend = [...arrayToSend, messageCrc.toString(16)];
 
-   
+
 
     console.log(hexToAscii(arrayToSend))
     sendDataToDevice(arrayToSend);
@@ -113,6 +113,11 @@ const Qrcode = () => {
         reactivate={true}
         showMarker={true}
 
+      />
+
+      <Button
+        title="Run Bootloader"
+        onPress={() => navigation.navigate('Bootloader')}
       />
 
     </View>

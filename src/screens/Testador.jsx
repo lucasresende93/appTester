@@ -130,7 +130,7 @@ const Testador = ({ navigation }) => {
           justifyContent: 'center',
           padding: 10
         }}
-        onPress={handleRequestMTU}>
+        onPress={() => {}}>
         <Play width={24} height={24} color="black" />
         <Text style={{ color: 'black' }}>Inicia Simulador </Text>
       </TouchableOpacity>
