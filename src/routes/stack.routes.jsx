@@ -12,7 +12,8 @@ export default function StackRoutes() {
                 component={Testador}
                 options={{ headerShown: false, }}
             />
-            <Stack.Screen name="Qrcode" component={Qrcode} />
+            <Stack.Screen name="Qrcode" 
+            component={Qrcode} />
         </Stack.Navigator>
     )
 }
