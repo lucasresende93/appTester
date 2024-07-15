@@ -1,14 +1,16 @@
 import { NavigationContainer } from "@react-navigation/native";
 import TabRoutes from "./tab.routes";
 import { createStackNavigator } from "@react-navigation/stack";
-import Qrcode from "../screens/Qrcode";
+import { BluetoothProvider } from "../utils/hook/bluetooth";
 
 const Stack = createStackNavigator();
 
 export default function Routes() {
     return (
-        <NavigationContainer>
-            <TabRoutes />
-        </NavigationContainer>
+        <BluetoothProvider>
+            <NavigationContainer>
+                <TabRoutes />
+            </NavigationContainer>
+        </BluetoothProvider>
     )
 }
