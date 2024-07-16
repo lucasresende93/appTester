@@ -1,19 +1,20 @@
 import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { serverRoutes } from '../server/server-routes'
-import { Trophy } from 'lucide-react-native'
+import { useBluetoothContext } from '../utils/hook/bluetooth';
 
 
 const Bootloader = () => {
 
     const [data, setData] = useState([]);
 
+    const { sendDataToDevice, connectedDevice } = useBluetoothContext()
+
 
     async function handleCheckforUpdates() {
         try {
             const resposta = await serverRoutes.checkForUpdates();
 
-            // A resposta já é um objeto JSON, não precisa de JSON.parse
             const parsedData = resposta.developmentVersionsList;
             setData(parsedData);
             console.log(parsedData);
@@ -33,11 +34,9 @@ const Bootloader = () => {
     async function handleUpdateDevDevice(item) {
         try {
             const resposta = await serverRoutes.updateDevDevice(item.id);
-            for (let index = 0; index < resposta.developmentScript.length; index++) {
-               console.log(splitIntoPairs(resposta.developmentScript[index]));
-                
+            for (let index = 0; index < resposta.developmentScript.length; index++) {                
+                console.log(splitIntoPairs(resposta.developmentScript[index]));
             }
-            // console.log(splitIntoPairs(resposta.developmentScript[1]));
         } catch (error) {
             console.error('Error updating device:', error);
         }
@@ -47,9 +46,9 @@ const Bootloader = () => {
         <View style={styles.item}>
             <TouchableOpacity onPress={() => handleUpdateDevDevice(item)}>
                 <Text style={styles.title}>Software Version: {item.softwareVersion}</Text>
-                <Text>Hardware Version: {item.hardwareVersion}</Text>
-                <Text>Update Notes: {item.updateNotes}</Text>
-                <Text>Created At: {item.createdAt}</Text>
+                <Text style={styles.text}>Hardware Version: {item.hardwareVersion}</Text>
+                <Text style={[styles.text, { backgroundColor: '#ffff9e', padding: 4, alignSelf: 'flex-start', borderRadius: 6 }]}>Update Notes: {item.updateNotes}</Text>
+                <Text style={styles.text}>Created At: {item.createdAt}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -76,12 +75,21 @@ const styles = StyleSheet.create({
     },
     item: {
         padding: 10,
+        paddingHorizontal: 20,
         marginVertical: 8,
-        backgroundColor: 'green',
+        marginHorizontal: 8,
+        backgroundColor: '#94ba1d',
+        borderRadius: 20,
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: 'black',
+    },
+    text: {
+        fontSize: 12,
+        color: 'black',
+
     },
 });
 

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Bluetooth, BluetoothOff, Navigation, Play } from 'lucide-react-native'
+import { Bluetooth, BluetoothOff, Navigation, Play, QrCode } from 'lucide-react-native'
 import Tester from '../components/modal/tester'
 
 import { useBluetoothContext } from '../utils/hook/bluetooth'
@@ -11,7 +11,14 @@ const cmdStartTest = ['54', '46', '53', '53', '01', '01', 'BE']
 
 const Testador = ({ navigation }) => {
 
-  const {  startScan, sendDataToDevice, isScanning, receivedData, devices, connectToDevice, disconnectFromDevice, connectedDevice } = useBluetoothContext()
+  const { startScan,
+    sendDataToDevice,
+    isScanning,
+    receivedData,
+    devices,
+    connectToDevice,
+    disconnectFromDevice,
+    connectedDevice } = useBluetoothContext()
 
   const [injecao, setInjecao] = useState(false)
   const [ignicao, setIgnicao] = useState(false)
@@ -43,6 +50,9 @@ const Testador = ({ navigation }) => {
     data[9] === 1 ? setTemperatura(true) : setTemperatura(false)
     data[10] === 1 ? setPeriferico(true) : setPeriferico(false)
 
+
+
+
   }
 
   const handleInitTest = () => {
@@ -58,13 +68,13 @@ const Testador = ({ navigation }) => {
 
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
 
       <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', textAlign: 'center' }}> Jiga de Teste <>SpeedBike</></Text>
 
 
       <View style={styles.containnerButton}>
-        <View style={[{ backgroundColor: (isScanning || connectedDevice) ? 'gray' : 'blue' }, styles.buttonLayout]}>
+        <View style={[{ backgroundColor: (isScanning || connectedDevice) ? 'gray' : '#0050EF' }, styles.buttonLayout]}>
           <TouchableOpacity
             onPress={startScan}
             disabled={isScanning}
@@ -80,7 +90,7 @@ const Testador = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={[{ backgroundColor: connectedDevice ? 'blue' : 'gray' }, styles.buttonLayout]}>
+        <View style={[{ backgroundColor: connectedDevice ? '#0050EF' : 'gray' }, styles.buttonLayout]}>
           <TouchableOpacity
             onPress={disconnectFromDevice}
             disabled={!connectedDevice}
@@ -123,7 +133,7 @@ const Testador = ({ navigation }) => {
         )}
       />}
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -133,32 +143,60 @@ const Testador = ({ navigation }) => {
         onPress={() => {}}>
         <Play width={24} height={24} color="black" />
         <Text style={{ color: 'black' }}>Inicia Simulador </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 10
-        }}
-        onPress={handleInitTest}>
-        <Play width={24} height={24} color="black" />
-        <Text style={{ color: 'black' }}>Inicia Testador </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+
+
+      {connectedDevice &&
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 10
+          }}
+          onPress={handleInitTest}>
+          <Play width={24} height={24} color="black" />
+          <Text style={{ color: 'black' }}>Inicia Testador </Text>
+        </TouchableOpacity>}
 
       <Text style={{ color: 'black', alignItems: 'center', justifyContent: 'center', padding: 10, textAlign: 'center' }}>
         {receivedData}
       </Text>
       {connectedDevice &&
         <Text style={{ color: 'black', alignItems: 'center', justifyContent: 'center', padding: 10, textAlign: 'center' }}>
-          Conectado em {connectedDevice.name}
+          Conectado em  
+          <Text style={{ color: "white", 
+            fontWeight: 'bold',
+            backgroundColor: 'green',
+            padding: 5,
+            fontSize: 12 }}> 
+             {connectedDevice.name}
+
+          </Text>
         </Text>
       }
-      <Button
-        title="Qr Code" onPress={() => navigation.navigate('Qrcode')} />
 
 
-
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          left: 0,
+          right: 0,
+          padding: 15,
+          backgroundColor: '#0050EF',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginHorizontal: 100,
+          borderRadius: 20
+        }}
+        onPress={() => navigation.navigate('Qrcode')}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <QrCode width={24} height={24} color="white" />
+          <Text style={{ color: 'white', fontWeight: 'bold', padding: 5 }}>QR CODE</Text>
+        </View>
+      </TouchableOpacity>
 
     </View>
   )

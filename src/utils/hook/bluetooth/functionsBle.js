@@ -32,7 +32,7 @@ const useBluetooth = () => {
 
         const handleDiscoverPeripheral = (peripheral) => {
 
-            if (peripheral.name === 'ENGENHARIA2') {
+            if (peripheral.name) {
                 setDevices((prevDevices) => {
                     if (!prevDevices.some((device) => device.id === peripheral.id)) {
                         // console.log('Discovered peripheral:', peripheral);

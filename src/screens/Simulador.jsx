@@ -2,10 +2,23 @@ import { View, Text } from 'react-native'
 import React from 'react'
 
 const Simulador = () => {
- 
+
   return (
-    <View>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}> Tela Simulador</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'whitesmoke' }}>
+      <Text style={{
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        backgroundColor: 'gray',
+        padding: 10,
+        borderRadius: 10
+      }}> Tela Simulador</Text>
+      <Text style={{
+        color: 'black',
+        fontSize: 15,
+        padding: 10,
+        borderRadius: 10
+      }}> Em produção ⚠️ </Text>
     </View>
   )
 }
