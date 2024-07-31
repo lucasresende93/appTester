@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, Button } from 'react-native'
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, Button, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Bluetooth, BluetoothOff, Navigation, Play, QrCode } from 'lucide-react-native'
 import Tester from '../components/modal/tester'
@@ -28,6 +28,11 @@ const Testador = ({ navigation }) => {
   const [periferico, setPeriferico] = useState(false)
   const [marcha, setMarcha] = useState(false)
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [timeoutId, setTimeoutId] = useState(null);
+  const [responseReceived, setResponseReceived] = useState(false);
+
 
   useEffect(() => {
     if (connectedDevice)
@@ -37,6 +42,8 @@ const Testador = ({ navigation }) => {
 
   useEffect(() => {
     if (receivedData) {
+      clearTimeout(timeoutId);
+      setResponseReceived(true);
       handleReceivedData(receivedData)
     }
   }, [receivedData])
@@ -55,7 +62,20 @@ const Testador = ({ navigation }) => {
 
   }
 
+
   const handleInitTest = () => {
+    setResponseReceived(false);
+
+    setIsLoading(true);
+
+    const id = setTimeout(() => {
+      if (!responseReceived) {
+        Alert.alert('Erro', 'Nenhuma resposta recebida do dispositivo.');
+      }
+    }, 5000);
+
+    setTimeoutId(id);
+
     sendDataToDevice(cmdStartTest);
     setInjecao(false);
     setIgnicao(false);
@@ -65,14 +85,18 @@ const Testador = ({ navigation }) => {
     setPeriferico(false);
   }
 
+  useEffect(() => {
+    if (responseReceived && timeoutId) {
+      clearTimeout(timeoutId);
+      setIsLoading(false);
+    }
+  }, [responseReceived, timeoutId]);
 
 
   return (
     <View style={{ flex: 1 }}>
 
       <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', textAlign: 'center' }}> Jiga de Teste <>SpeedBike</></Text>
-
-
       <View style={styles.containnerButton}>
         <View style={[{ backgroundColor: (isScanning || connectedDevice) ? 'gray' : '#0050EF' }, styles.buttonLayout]}>
           <TouchableOpacity
@@ -103,20 +127,38 @@ const Testador = ({ navigation }) => {
         </View>
       </View>
 
-      {connectedDevice &&
-        <View style={{ marginTop: 5 }}>
-          <Tester text="Injeção" color={injecao ? 'green' : "#e6df19"} />
-          <Tester text="Ignição" color={ignicao ? 'green' : "#e6df19"} />
-          <Tester text="RPM" color={RPM ? 'green' : "#e6df19"} />
-          <Tester text="TPS" color={TPS ? 'green' : "#e6df19"} />
-          <Tester text="Temperatura" color={temperatura ? 'green' : "#e6df19"} />
-          <Tester text="Periférico" color={periferico ? 'green' : "#e6df19"} />
-          {/* 
-          <Text style={{ color: 'black', alignItems: 'center', justifyContent: 'center', padding: 10, fontSize: 15 }}>
-            Conectado em <Text style={{ color: "green", fontStyle: "italic", fontWeight: 'bold', fontSize: 20 }}>{connectedDevice}</Text>
-          </Text> */}
-        </View>
+      {
+        (connectedDevice && !isLoading) ?
+          (
+            <>
+              <View style={{ marginTop: 5 }}>
+                <Tester text="Injeção" color={injecao ? 'green' : "#e6df19"} />
+                <Tester text="Ignição" color={ignicao ? 'green' : "#e6df19"} />
+                <Tester text="RPM" color={RPM ? 'green' : "#e6df19"} />
+                <Tester text="TPS" color={TPS ? 'green' : "#e6df19"} />
+                <Tester text="Temperatura" color={temperatura ? 'green' : "#e6df19"} />
+                <Tester text="Periférico" color={periferico ? 'green' : "#e6df19"} />
+              </View>
+            </>
+          )
+          :
+          (
+            (connectedDevice && isLoading) ?
+              (<>
+                <View style={{ marginTop: 5 }}>
+                  <Tester text="Injeção" color={injecao ? 'green' : "gray"} />
+                  <Tester text="Ignição" color={ignicao ? 'green' : "gray"} />
+                  <Tester text="RPM" color={RPM ? 'green' : "gray"} />
+                  <Tester text="TPS" color={TPS ? 'green' : "gray"} />
+                  <Tester text="Temperatura" color={temperatura ? 'green' : "gray"} />
+                  <Tester text="Periférico" color={periferico ? 'green' : "gray"} />
+                </View>
+              </>) :
+              (<></>)
+          )
       }
+
+
 
       {!connectedDevice && <FlatList
         data={devices}

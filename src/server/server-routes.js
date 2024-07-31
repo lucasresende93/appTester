@@ -1,3 +1,4 @@
+import { Alert } from "react-native";
 import { api } from "./api";
 
 
@@ -30,8 +31,29 @@ async function updateDevDevice(id) {
     }
 }
 
+async function updateTraceDevice(data) {
+    try {
+        // console.log(data)
+        const resposta = await api.post(`/trace/data`, data)
+        return resposta
+    } catch (error) {
+        // Verifique se é um erro de resposta da API
+        if (error.response) {
+
+            // console.log('Response error:', error.response.data.message);
+            // console.log('Status:', error.response.status);
+
+            if (error.response.status == 400) {
+             Alert.alert("Error", "Peça ja cadastrada no servidor.");
+
+            }
+        } 
+    }
+}
+
 export const serverRoutes = {
     status,
     checkForUpdates,
-    updateDevDevice
+    updateDevDevice,
+    updateTraceDevice
 }   

@@ -12,7 +12,7 @@ const SERVICE_UUID = '0000fff0-0000-1000-8000-00805f9b34fb';
 const CHARACTERISTIC_WRITE_UUID = '0000fff2-0000-1000-8000-00805f9b34fb';
 const CHARACTERISTIC_READ_UUID = '0000fff1-0000-1000-8000-00805f9b34fb';
 
-const specificNames = ['SpeedBike', 'EBYTEBLE', 'testador', 'EMODULE', 'ENGENHARIA'];
+const specificNames = ['EBYTEBLE', 'SPEEDBIKE', 'EMODULE', 'ENGENHARIA'];
 
 let dispositivosBLE = 0;
 
@@ -32,7 +32,7 @@ const useBluetooth = () => {
 
         const handleDiscoverPeripheral = (peripheral) => {
 
-            if (peripheral.name) {
+            if (peripheral.name && specificNames.some(name => peripheral.name.includes(name))) {
                 setDevices((prevDevices) => {
                     if (!prevDevices.some((device) => device.id === peripheral.id)) {
                         // console.log('Discovered peripheral:', peripheral);
@@ -177,8 +177,6 @@ const useBluetooth = () => {
             const buffer = Buffer.from(byteArray);
             const data = buffer.toJSON().data;
 
-
-
             // Enviar os dados para o dispositivo
             BleManager.write(
                 connectedDevice.id,
@@ -193,13 +191,14 @@ const useBluetooth = () => {
                         let element = data[index].toString(16);
                         hexString += element.padStart(2, '0') + ' ';
                     }
-                    // console.log('Data sent successfully', hexString);
+                    console.log('Data sent successfully', hexString);
                 })
                 .catch((error) => {
                     console.log('Write error', error);
                 });
         }
         else
+
             console.log('No device connected.')
     };
 
